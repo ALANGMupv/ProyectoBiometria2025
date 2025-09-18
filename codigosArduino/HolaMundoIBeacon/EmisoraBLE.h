@@ -104,7 +104,7 @@ public:
   }  // ()
   
   // .........................................................
-  // estaAnunciando() -> Boleano
+  // estaAnunciando() -> T/F
   // .........................................................
   bool estaAnunciando() {
 	return Bluefruit.Advertising.isRunning();
