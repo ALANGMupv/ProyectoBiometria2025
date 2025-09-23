@@ -1,0 +1,1 @@
+clase medidor representa un sensor, puerto serie el puerto serie, emisora representa a la emisora

@@ -161,21 +161,14 @@ void loop () {
   // 
   // Al terminar la prueba hay que hacer Publicador::laEmisora privado
   // 
-  /*char datos[21] = {
+  char datos[21] = {
 	'H', 'o', 'l', 'a',
 	'H', 'o', 'l', 'a',
 	'H', 'o', 'l', 'a',
 	'H', 'o', 'l', 'a',
 	'H', 'o', 'l', 'a',
 	'H'
-  };*/
-
-  char datos[21] = {
-  '1','2','3','4',
-  ' ',' ',' ',' ',' ',' ',
-  ' ',' ',' ',' ',' ',
-  ' ',' ',' ',' ',' '
-};
+  };
 
 // elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( &datos[0], 21 );
 elPublicador.laEmisora.emitirAnuncioIBeaconLibre(datos, 21);
