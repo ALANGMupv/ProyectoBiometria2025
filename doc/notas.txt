@@ -1,1 +1,12 @@
-clase medidor representa un sensor, puerto serie el puerto serie, emisora representa a la emisora
+Clase medidor representa un sensor, puerto serie el puerto serie, emisora representa a la emisora...(documentar).
+
+Una transacción es: Una transacción en una base de datos es una unidad de trabajo que agrupa una o varias operaciones (insertar, actualizar, borrar, consultar) que se ejecutan como un todo.
+Se caracteriza por cumplir las propiedades ACID:
+
+Atomacidad → se hace todo o nada.
+
+Consistencia → mantiene la integridad de la base.
+
+Isolamiento → no interfiere con otras transacciones concurrentes.
+
+Durabilidad → los cambios confirmados (commit) persisten aunque falle el sistema

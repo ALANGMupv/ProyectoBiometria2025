@@ -68,7 +68,7 @@ public:
 	//
 	// 1. empezamos anuncio
 	//
-	uint16_t major = (MedicionesID::CO2 << 8) + contador; // Si estás publicando CO₂ y contador = 7; major = 0B07 (CO₂ + contador; major = 0x0B07
+	uint16_t major = (MedicionesID::CO2 << 8) + contador; // Si estás publicando CO₂ y contador = 7;  major = 0B07 (CO₂ + contador; major = 0x0B07
 
 	(*this).laEmisora.emitirAnuncioIBeacon( (*this).beaconUUID, 
 											major,
