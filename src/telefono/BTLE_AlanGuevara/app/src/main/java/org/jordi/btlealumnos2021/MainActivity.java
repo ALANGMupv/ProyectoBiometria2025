@@ -11,6 +11,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -141,7 +142,25 @@ public class MainActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
 
-                mostrarInformacionDispositivoBTLE( resultado );
+                // Lógica cambiada para encontrar un dispositivo en concreto
+                // Compara el nombre y si lo encuentra, lo muestra y se detiene la búsqueda
+
+                BluetoothDevice bluetoothDevice = resultado.getDevice();
+
+                // Instanciamos el nombre dentro de la función
+                String nombre = bluetoothDevice.getName();
+
+                // Si es igual el nombre al dispositivo buscaddo
+                if (nombre != null && nombre.equals(dispositivoBuscado)) {
+                    Log.d(ETIQUETA_LOG, "Buscando el dispositivo: " + nombre + ". ¡A ver si tenemos suerte!");
+
+                    // Mostramos la información del dispositivo en concreto
+                    mostrarInformacionDispositivoBTLE(resultado);
+
+                    // detener escaneo cuando se encuentra
+                    detenerBusquedaDispositivosBTLE();
+                    Log.d(ETIQUETA_LOG, "Se ha detenido la búsqueda, encontrado con éxito el dispositivo: " + nombre);
+                }
             }
 
             @Override
@@ -195,8 +214,7 @@ public class MainActivity extends AppCompatActivity {
         //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
 
         //this.buscarEsteDispositivoBTLE( "EPSG-GTI-PROY-3A" );
-        this.buscarEsteDispositivoBTLE( "fistro" );
-
+        this.buscarEsteDispositivoBTLE("[TV] Samsung 7 Series (50)"); //Ejemplo para ver si funciona
     } // ()
 
     // --------------------------------------------------------------
@@ -232,20 +250,34 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " inicializarBlueTooth(): voy a perdir permisos (si no los tuviera) !!!!");
 
-        if (
-                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        )
-        {
-            ActivityCompat.requestPermissions(
-                    MainActivity.this,
-                    new String[]{Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_FINE_LOCATION},
-                    CODIGO_PETICION_PERMISOS);
-        }
-        else {
-            Log.d(ETIQUETA_LOG, " inicializarBlueTooth(): parece que YA tengo los permisos necesarios !!!!");
+        // Cambios necesarios
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12 o superior → pide permisos de dispositivos cercanos
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
 
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{
+                                Manifest.permission.BLUETOOTH_SCAN,
+                                Manifest.permission.BLUETOOTH_CONNECT
+                        },
+                        CODIGO_PETICION_PERMISOS
+                );
+            } else {
+                Log.d(ETIQUETA_LOG, "Permisos de Bluetooth (Android 12+) ya concedidos");
+            }
+        } else {
+            // Android 11 o inferior → sigue usando localización
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        CODIGO_PETICION_PERMISOS
+                );
+            } else {
+                Log.d(ETIQUETA_LOG, "Permisos de localización ya concedidos||inicializarBlueTooth(): parece que YA tengo los permisos necesarios !!!!");
+            }
         }
     } // ()
 
