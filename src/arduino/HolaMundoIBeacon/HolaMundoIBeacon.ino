@@ -64,6 +64,7 @@ void inicializarPlaquita () {
 // --------------------------------------------------------------
 void setup() {
 
+// Se queda en bucle hasta que el puerto serie (Serial) esté listo para imprimir
   Globales::elPuerto.esperarDisponible();
 
   // 
@@ -71,13 +72,14 @@ void setup() {
   // 
   inicializarPlaquita();
 
-  // Suspend Loop() to save power
+  // Suspend Loop() to save power. Sirve para suspender temporalmente el loop() y ahorrar energía.
   // suspendLoop();
 
   // 
   // 
   // 
 
+// Inicializa el chip Bluetooth (nRF52) y asegura que al inicio no haya anuncios activos
   Globales::elPublicador.encenderEmisora();
 
   // Globales::elPublicador.laEmisora.pruebaEmision();
@@ -98,7 +100,7 @@ void setup() {
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
-inline void lucecitas() {
+inline void lucecitas() { // La llamamos en el loop.
   using namespace Globales;
 
   elLED.brillar( 100 ); // 100 encendido
@@ -139,7 +141,9 @@ void loop () {
   // 
   int valorCO2 = elMedidor.medirCO2();
   
-  elPublicador.publicarCO2( valorCO2,
+  // UUID = fijo (EPSG-GTI-PROY-3A). Major = 2 bytes con el ID + contador. Minor = 2 bytes con el valor de CO₂. TxPower = 1 byte.
+  
+  elPublicador.publicarCO2( valorCO2, // Se publica en el UUID
 							cont,
 							1000 // intervalo de emisión
 							);

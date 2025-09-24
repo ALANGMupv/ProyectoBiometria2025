@@ -18,6 +18,8 @@ using BleSecurityMode = SecureMode_t; // alias para mantener compatibilidad
 // ----------------------------------------------------
 // alReves() utilidad
 // pone al revés el contenido de una array en el mismo array
+
+// Se usa porque los UUIDs en BLE se guardan en un orden distinto al que se escriben normalment
 // ----------------------------------------------------
 template< typename T >
 T *  alReves( T * p, int n ) {
@@ -62,6 +64,41 @@ public:
 											   uint8_t * data, uint16_t len); 
   // .........................................................
   // .........................................................
+
+// En Bluetooth Low Energy (BLE) hay tres sitios distintos donde aparecen UUIDs:
+//
+// 1. Beacon (iBeacon/Eddystone) → se usa para anunciar datos al aire.
+//    En este código: Publicador → beaconUUID.
+//
+// 2. Servicio → como un "contenedor" de datos dentro de una conexión BLE.
+//    En este código: ServicioEnEmisora → uuidServicio.
+//
+// 3. Característica → cada valor concreto dentro de un servicio.
+//    En este código: uuidCaracteristica.
+//
+// 🔹 En este proyecto actual solo se está trabajando con el modo beacon,
+//    que únicamente anuncia valores por el aire.
+//    Los UUIDs de servicio/característica están definidos pero no se usan aún,
+//    porque no se está montando un servicio BLE con conexión, solo anuncios.
+
+  // .........................................................
+  // .........................................................
+
+  /*
+  Beacon (lo que usa ahora) → sirve para broadcast: tu placa grita “¡estoy aquí!” + un identificador o pequeño valor. No hay conexión, el móvil solo escucha.
+🔹 Ideal para: publicidad, presencia, valores muy simples como un número.
+
+Servicio (uuidServicio) → sirve cuando quieras que tu placa sea reconocida como un dispositivo BLE estándar (ej. un sensor de CO₂). El móvil se conecta y descubre qué servicios ofrece.
+🔹 Lo usarías si en el futuro quieres que el móvil vea tu placa como un sensor ambiental oficial, con un “menú de servicios” accesible.
+
+Característica (uuidCaracteristica) → sirve para datos concretos dentro de un servicio. Cada característica es como una “variable compartida” (ej. una para CO₂, otra para temperatura). El móvil puede leer, escribir o suscribirse a cambios.
+🔹 Lo usarías si quieres enviar varios datos separados, no solo uno comprimido en un beacon.
+*/
+
+  // .........................................................
+  // .........................................................
+
+
   class Caracteristica {
   private:
 	uint8_t uuidCaracteristica[16] = { // el uuid se copia aquí (al revés) a partir de un string-c
