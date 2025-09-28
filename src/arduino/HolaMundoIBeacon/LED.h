@@ -10,6 +10,7 @@
 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
+// esperar(...) no es algo propio solo de un LED, sino una utilidad general.
 void esperar (long tiempo) {
   delay (tiempo);
 }

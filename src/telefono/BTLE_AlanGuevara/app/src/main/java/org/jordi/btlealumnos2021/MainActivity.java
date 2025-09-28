@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
-    private BluetoothLeScanner elEscanner;
+    private BluetoothLeScanner elEscanner; // Objeto que realizará los escaneos BTLE.
 
-    private ScanCallback callbackDelEscaneo = null;
+    private ScanCallback callbackDelEscaneo = null; // Se define cuando inicias un escaneo.
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.callbackDelEscaneo = new ScanCallback() {
             @Override
+            // Se activa cada vez que se recibe un anuncio BLE.
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanResult() ");
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            // Por si acaso llegan todos juntos, te lo entrega en una lista
             public void onBatchScanResults(List<ScanResult> results) {
                 super.onBatchScanResults(results);
                 Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onBatchScanResults() ");
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            // Se activa si falla el escaneo.
             public void onScanFailed(int errorCode) {
                 super.onScanFailed(errorCode);
                 Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanFailed() ");
@@ -74,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empezamos a escanear ");
 
+        // LLAMADA
         this.elEscanner.startScan( this.callbackDelEscaneo);
 
     } // ()
@@ -157,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     // Mostramos la información del dispositivo en concreto
                     mostrarInformacionDispositivoBTLE(resultado);
 
-                    // detener escaneo cuando se encuentra
+                    // detener escaneo cuando se encuentra, me interesará esto en el futuro o no?
                     detenerBusquedaDispositivosBTLE();
                     Log.d(ETIQUETA_LOG, "Se ha detenido la búsqueda, encontrado con éxito el dispositivo: " + nombre);
                 }

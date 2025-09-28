@@ -15,6 +15,7 @@
 // --------------------------------------------------------------
 #include <bluefruit.h>
 
+// Eliminar macros “molestas”
 #undef min // vaya tela, están definidos en bluefruit.h y  !
 #undef max // colisionan con los de la biblioteca estándar
 
@@ -70,7 +71,7 @@ void setup() {
   // 
   // 
   // 
-  inicializarPlaquita();
+  inicializarPlaquita(); // Nada definido
 
   // Suspend Loop() to save power. Sirve para suspender temporalmente el loop() y ahorrar energía.
   // suspendLoop();
@@ -153,10 +154,12 @@ void loop () {
   // 
   int valorTemperatura = elMedidor.medirTemperatura();
   
+   /* COMENTAMOS, SOLO VAMOS A EMITIR CO2
   elPublicador.publicarTemperatura( valorTemperatura, 
 									cont,
 									1000 // intervalo de emisión
 									);
+                  */
 
   // 
   // prueba para emitir un iBeacon y poner
@@ -165,6 +168,8 @@ void loop () {
   // 
   // Al terminar la prueba hay que hacer Publicador::laEmisora privado
   // 
+
+  
   char datos[21] = {
 	'H', 'o', 'l', 'a',
 	'H', 'o', 'l', 'a',
@@ -174,9 +179,10 @@ void loop () {
 	'H'
   };
 
+/* COMENTAMOS, SOLO VAMOS A EMITIR CO2
 // elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( &datos[0], 21 );
 elPublicador.laEmisora.emitirAnuncioIBeaconLibre(datos, 21);
-
+*/
 
 
   esperar( 2000 );

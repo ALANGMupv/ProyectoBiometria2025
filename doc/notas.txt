@@ -10,3 +10,11 @@ Consistencia → mantiene la integridad de la base.
 Isolamiento → no interfiere con otras transacciones concurrentes.
 
 Durabilidad → los cambios confirmados (commit) persisten aunque falle el sistema
+
+---
+
+Sparkfun sensor:
+
+ACCURACY (EXACTITUD): ERROR TOTAL
+RESOLUCION: CAMBIO MAS PEQUEÑO EN LA MAGNITUD DE ENTRADA, QUE PROVOCA UN CAMBIO EN LA MENTIDAD
+LA PRECISIÓN ES UNA MEDIDA DE ERROR ALEATORIO

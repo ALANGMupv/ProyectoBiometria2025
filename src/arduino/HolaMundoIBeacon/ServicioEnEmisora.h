@@ -35,6 +35,7 @@ T *  alReves( T * p, int n ) {
 
 // ----------------------------------------------------
 // ----------------------------------------------------
+// Convierte un string en un array uint8_t, copiándolo al revés
 uint8_t * stringAUint8AlReves( const char * pString, uint8_t * pUint, int tamMax ) {
 
 	int longitudString =  strlen( pString );
@@ -127,6 +128,7 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 
 	// .........................................................
 	// .........................................................
+  // Constructor con nombre + propiedades + permisos + tamaño
 	Caracteristica( const char * nombreCaracteristica_ ,
 					uint8_t props,
 					BleSecurityMode permisoRead,
@@ -142,14 +144,17 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 	// .........................................................
 	// CHR_PROPS_WRITE , CHR_PROPS_READ ,  CHR_PROPS_NOTIFY 
 	// .........................................................
+   // Configura propiedades (read, write, notify)
 	void asignarPropiedades ( uint8_t props ) {
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.println( " laCaracteristica.setProperties( props ); ");
-	  (*this).laCaracteristica.setProperties( props );
+	  // si intentas hacer Serial.print dentro del constructor, a veces falla porque aún no se ha inicializado el puerto serie
+    (*this).laCaracteristica.setProperties( props );
 	} // ()
 
 	// .........................................................
 	// BleSecurityMode::SECMODE_OPEN  , BleSecurityMode::SECMODE_NO_ACCESS
 	// .........................................................
+  // Configura permisos de lectura/escritura
 	void asignarPermisos( BleSecurityMode permisoRead, BleSecurityMode permisoWrite ) {
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.println( "laCaracteristica.setPermission( permisoRead, permisoWrite ); " );
 	  (*this).laCaracteristica.setPermission( permisoRead, permisoWrite );
@@ -157,6 +162,7 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 
 	// .........................................................
 	// .........................................................
+   // Configura tamaño máximo de datos
 	void asignarTamanyoDatos( uint8_t tam ) {
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.print( " (*this).laCaracteristica.setFixedLen( tam = " );
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.println( tam );
@@ -167,6 +173,7 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
   public:
 	// .........................................................
 	// .........................................................
+  // Configura todo junto
 	void asignarPropiedadesPermisosYTamanyoDatos( uint8_t props,
 												 BleSecurityMode permisoRead,
 												 BleSecurityMode permisoWrite, 
@@ -179,6 +186,7 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 
 	// .........................................................
 	// .........................................................
+  // Escribir datos en la característica
 	uint16_t escribirDatos( const char * str ) {
 	  // Serial.print( " return (*this).laCaracteristica.write( str  = " );
 	  // Serial.println( str );
@@ -192,6 +200,7 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 
 	// .........................................................
 	// .........................................................
+  // Notificar datos a un cliente conectado
 	uint16_t notificarDatos( const char * str ) {
 	  
 	  uint16_t r = laCaracteristica.notify( &str[0] );
@@ -201,12 +210,14 @@ Característica (uuidCaracteristica) → sirve para datos concretos dentro de un
 
 	// .........................................................
 	// .........................................................
+  // Instalar callback que se dispara cuando alguien escribe la característica
 	void instalarCallbackCaracteristicaEscrita( CallbackCaracteristicaEscrita cb ) {
 	  (*this).laCaracteristica.setWriteCallback( cb );
 	} // ()
 
 	// .........................................................
 	// .........................................................
+  // Activar la característica (inicializarla en el stack BLE)
 	void activar() {
 	  err_t error = (*this).laCaracteristica.begin();
 	  Globales::elPuerto.escribir(  " (*this).laCaracteristica.begin(); error = " );
@@ -235,7 +246,7 @@ private:
   //
   //
   //
-  std::vector< Caracteristica * > lasCaracteristicas;
+  std::vector< Caracteristica * > lasCaracteristicas; // lista de características añadidas
 
 public:
   
@@ -250,6 +261,7 @@ public:
   
   // .........................................................
   // .........................................................
+  // Muestra el UUID del servicio (debug)
   void escribeUUID() {
 	Serial.println ( "**********" );
 	for (int i=0; i<= 15; i++) {
@@ -260,12 +272,14 @@ public:
 
   // .........................................................
   // .........................................................
+  // Añadir característica a la lista
   void anyadirCaracteristica( Caracteristica & car ) {
 	(*this).lasCaracteristicas.push_back( & car );
   } // ()
 
   // .........................................................
   // .........................................................
+  // Activar servicio y todas sus características
   void activarServicio( ) {
 	// entiendo que al llegar aquí ya ha sido configurado
 	// todo: características y servicio
@@ -284,6 +298,7 @@ public:
   // .........................................................
   operator BLEService&() {
 	// "conversión de tipo": si pongo esta clase en un sitio donde necesitan un BLEService
+  // si pasas un ServicioEnEmisora donde se espera un BLEService&, se use automáticamente elServicio
 	return elServicio;
   } // ()
 	
