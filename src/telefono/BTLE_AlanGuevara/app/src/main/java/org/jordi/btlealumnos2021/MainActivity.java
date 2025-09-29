@@ -41,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ScanCallback callbackDelEscaneo = null; // Se define cuando inicias un escaneo.
 
+    // Se crea una instancia de la clase LogicaFake
+    private LogicaFake logicaFake = new LogicaFake();
+
+
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     private void buscarTodosLosDispositivosBTLE() {
@@ -161,6 +165,32 @@ public class MainActivity extends AppCompatActivity {
                     // Mostramos la información del dispositivo en concreto
                     mostrarInformacionDispositivoBTLE(resultado);
 
+
+                    // -------------------------------------------------------------------------
+                    // -------------------------------------------------------------------------
+
+                    // Decido hacerlo aquí porque vamos a parsear la trama de mi dispositivo en concreto y no de cualquiera
+                    // Parseo de trama y envío por POST con LogicaFake
+
+                    byte[] bytes = resultado.getScanRecord().getBytes(); // Obtener los bytes crudos del anuncio BLE
+                    TramaIBeacon tib = new TramaIBeacon(bytes); // Interpretar los bytes como una trama iBeacon, llama automaticamente al constructor
+
+                    // Extraer UUID, major y minor del beacon con la clase Utilidades
+                    String uuid = Utilidades.bytesToString(tib.getUUID());
+                    int major = Utilidades.bytesToInt(tib.getMajor());
+                    int minor = Utilidades.bytesToInt(tib.getMinor());
+
+                    int gas = (major >> 8) & 0xFF;   // parte alta = tipo (11 = CO2)
+                    int contador = major & 0xFF;     // parte baja = contador
+                    int valor = minor;               // valor de CO2
+
+                    // Enviar los datos procesados al servidor
+                    logicaFake.guardarMedicion(uuid, gas, valor, contador);
+
+                    // -------------------------------------------------------------------------
+                    // -------------------------------------------------------------------------
+
+
                     // detener escaneo cuando se encuentra, me interesará esto en el futuro o no?
                     detenerBusquedaDispositivosBTLE();
                     Log.d(ETIQUETA_LOG, "Se ha detenido la búsqueda, encontrado con éxito el dispositivo: " + nombre);
@@ -218,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
 
         //this.buscarEsteDispositivoBTLE( "EPSG-GTI-PROY-3A" );
-        this.buscarEsteDispositivoBTLE("[TV] Samsung 7 Series (50)"); //Ejemplo para ver si funciona
+        this.buscarEsteDispositivoBTLE("GTI-3A-PlacaAlan"); //AQUÍ METO EL NOMBRE DE MI PLACA
     } // ()
 
     // --------------------------------------------------------------
