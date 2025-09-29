@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     // Se crea una instancia de la clase LogicaFake
     private LogicaFake logicaFake = new LogicaFake();
 
+    private long ultimaLectura = 0;
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -149,22 +151,29 @@ public class MainActivity extends AppCompatActivity {
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
-
                 // Lógica cambiada para encontrar un dispositivo en concreto
                 // Compara el nombre y si lo encuentra, lo muestra y se detiene la búsqueda
 
                 BluetoothDevice bluetoothDevice = resultado.getDevice();
-
                 // Instanciamos el nombre dentro de la función
                 String nombre = bluetoothDevice.getName();
+                Log.d(ETIQUETA_LOG, "Buscando el dispositivo. ¡A ver si tenemos suerte!");
 
                 // Si es igual el nombre al dispositivo buscaddo
                 if (nombre != null && nombre.equals(dispositivoBuscado)) {
-                    Log.d(ETIQUETA_LOG, "Buscando el dispositivo: " + nombre + ". ¡A ver si tenemos suerte!");
+                    long ahora = System.currentTimeMillis();
+
+                    // Código añadido, recibirá lecturas cada 2s que es cuando reinicia el loop
+                    // Evitar procesar anuncios seguidos (solo 1 cada 2s)
+                    if (ahora - ultimaLectura < 2000) {
+                        return; // ignoramos este anuncio
+                    }
+                    ultimaLectura = ahora;
+
+                    Log.d(ETIQUETA_LOG, "Encontrado el dispositivo: " + nombre);
 
                     // Mostramos la información del dispositivo en concreto
                     mostrarInformacionDispositivoBTLE(resultado);
-
 
                     // -------------------------------------------------------------------------
                     // -------------------------------------------------------------------------
@@ -189,10 +198,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // -------------------------------------------------------------------------
                     // -------------------------------------------------------------------------
-                    
+
                     Log.d(ETIQUETA_LOG, "Encontrado con éxito el dispositivo: " + nombre);
+                    }
                 }
-            }
+
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
@@ -252,11 +262,12 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     public void botonDetenerBusquedaDispositivosBTLEPulsado( View v ) {
         /*
-        LO COMENTO PORQUE NO TENGO PLACA Y NECESITO PROBAR QUE HAGA POST CORRECTAMENTE
+        LO COMENTO PORQUE NO TENGO PLACA Y NECESITO PROBAR QUE HAGA POST CORRECTAMENTE*/
         Log.d(ETIQUETA_LOG, " boton detener busqueda dispositivos BTLE Pulsado" );
         this.detenerBusquedaDispositivosBTLE();
-        */
-        logicaFake.guardarMedicion("EPSG-GTI-PROY-3A", 12, 1254, 8);
+
+        /* PARA VER SI FUNCIONABA (NO HACER CASO)
+        logicaFake.guardarMedicion("EPSG-GTI-PROY-3A", 12, 1254, 8);*/
     } // ()
 
     // --------------------------------------------------------------

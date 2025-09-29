@@ -2,26 +2,23 @@
  * Logica.js
  * -------------------------
  * Capa de LÓGICA DE NEGOCIO.
- * Aquí se define cómo la aplicación habla con la base de datos SQLite.
- * - Se encarga de abrir la conexión.
+ * Aquí se define cómo la aplicación habla con la base de datos MySQL.
+ * - Se encarga de abrir la conexión (pool de conexiones).
  * - Ejecutar consultas SQL.
  * - Devolver resultados a la capa REST (ReglasREST.js).
  */
 
-// Importamos la librería SQLite para Node.js.
-// .verbose() sirve para que muestre más mensajes de depuración en consola.
-const sqlite3 = require("sqlite3").verbose();
+// Importamos la librería mysql2 con soporte de promesas
+const mysql = require("mysql2/promise");
 
 class Logica {
     /**
      * Constructor de la clase Logica.
-     * @param {string} nombreBD - ruta al archivo de la base de datos SQLite.
-     *
-     * Abre la conexión con la BD cuando se crea el objeto.
+     * @param {object} config - Objeto con la configuración de conexión a MySQL.
      */
-    constructor(nombreBD) {
-        this.nombreBD = nombreBD;                // Guardamos la ruta de la BD
-        this.db = new sqlite3.Database(nombreBD); // Abrimos conexión con SQLite
+    constructor(config) {
+        this.config = config;                 // Guardamos la configuración
+        this.pool = mysql.createPool(config); // Creamos el pool de conexiones
     }
 
     /**
@@ -32,36 +29,27 @@ class Logica {
      * @param {number} valor - Valor numérico de la medida.
      * @param {number} contador - Número de medida (contador del dispositivo).
      * 
-     * @return {Promise<Object>} - Devuelve una promesa que resuelve con la fila insertada.
+     * @return {Promise<Object>} - Devuelve la fila insertada.
      */
-    guardarMedida(uuid, gas, valor, contador) {
-        const self = this; // Guardamos referencia a `this` porque dentro de callbacks cambia.
-
-        return new Promise((resolve, reject) => {
-            // SQL para insertar la medida en la tabla
+    async guardarMedida(uuid, gas, valor, contador) {
+        // Conexión desde el pool
+        const conn = await this.pool.getConnection();
+        try {
+            // Insertar medida
             const sqlInsert = `
-                INSERT INTO medidas (uuid, gas, valor, contador)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO medidas (uuid, gas, valor, contador, fecha)
+                VALUES (?, ?, ?, ?, NOW())
             `;
+            const [resultado] = await conn.execute(sqlInsert, [uuid, gas, valor, contador]);
 
-            // Ejecutamos el INSERT con los parámetros (evita inyección SQL)
-            self.db.run(sqlInsert, [uuid, gas, valor, contador], function (err) {
-                if (err) {
-                    // Si hay error al insertar → rechazamos la promesa
-                    reject(err);
-                } else {
-                    // `this.lastID` → id de la última fila insertada
-                    const id = this.lastID;
+            // Recuperar la fila recién insertada (usamos el id autoincremental)
+            const sqlSelect = `SELECT * FROM medidas WHERE id = ?`;
+            const [filas] = await conn.execute(sqlSelect, [resultado.insertId]);
 
-                    // Ahora seleccionamos la fila insertada para devolverla completa
-                    const sqlSelect = `SELECT * FROM medidas WHERE id = ?`;
-                    self.db.get(sqlSelect, [id], (err2, fila) => {
-                        if (err2) reject(err2);
-                        else resolve(fila); // Devolvemos la fila como objeto
-                    });
-                }
-            });
-        });
+            return filas[0]; // Devolvemos el objeto con los datos insertados
+        } finally {
+            conn.release(); // Liberamos la conexión al pool
+        }
     }
 
     /**
@@ -70,24 +58,24 @@ class Logica {
      * @param {number} limit - número máximo de filas a devolver (por defecto 50).
      * @return {Promise<Array>} - Devuelve un array de filas con las medidas.
      */
-    listarMedidas(limit = 50) {
-        const self = this;
-        const lim = Math.max(1, Math.min(parseInt(limit || 50, 10), 500)); // Seguridad: 1–500
+    async listarMedidas(limit = 50) {
+        const conn = await this.pool.getConnection();
+        try {
+            // Seguridad: limit entre 1 y 500
+            const lim = Math.max(1, Math.min(parseInt(limit || 50, 10), 500));
 
-        return new Promise((resolve, reject) => {
             const sql = `
                 SELECT id, uuid, gas, valor, contador, fecha
                   FROM medidas
-              ORDER BY datetime(fecha) DESC, id DESC
+              ORDER BY fecha DESC, id DESC
                  LIMIT ?
             `;
-            self.db.all(sql, [lim], (err, filas) => {
-                if (err) reject(err);
-                else resolve(filas);
-            });
-        });
+            const [filas] = await conn.execute(sql, [lim]);
+            return filas;
+        } finally {
+            conn.release();
+        }
     }
-
 }
 
 // Exportamos la clase para usarla en mainServidorREST.js

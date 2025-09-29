@@ -61,7 +61,8 @@ function reglasREST(logica) {
             console.error("Error en POST /medida:", err);
             res.status(500).json({
                 status: "error",
-                mensaje: "Error interno"
+                mensaje: "Error interno",
+                detalle: err.message   // devuelve también el detalle
             });
         }
     });

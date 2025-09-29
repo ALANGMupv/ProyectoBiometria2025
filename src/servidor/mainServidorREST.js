@@ -3,41 +3,43 @@
  * -------------------------
  * Punto de entrada principal para levantar el servidor REST con Express.
  * - Configura Express (servidor - framework de node) y su middleware.
- * - Instancia la lógica de negocio (conexión a la base de datos).
+ * - Instancia la lógica de negocio (conexión a la base de datos MySQL en Plesk).
  * - Carga las reglas/endpoints REST definidos.
  * - Arranca el servidor escuchando en el puerto configurado.
  */
 
 // Importamos las librerías y módulos necesarios
 const express = require("express");           // Framework para levantar el servidor HTTP y definir rutas
-const cors = require("cors"); // El navegador ve que apache está en puerto 80 y mi API en 3000, lo bloquea, necesito "esto"
+const cors = require("cors");                 // Middleware para permitir peticiones desde otros orígenes
 
-const Logica = require("./logica/Logica");   // Módulo que implementa la lógica de negocio y acceso a la base de datos
-const reglasREST = require("./apiREST/ReglasREST"); // Módulo con las reglas/rutas REST que usará el servidor
+const Logica = require("./logica/Logica");    // Capa de lógica de negocio (conexión a MySQL)
+const reglasREST = require("./apiREST/ReglasREST"); // Endpoints REST
 
-// Definición de constantes de configuración
-const PORT = 3000;                             // Puerto donde escuchará el servidor
-const BD_PATH = "./bd/proyecto_biometria.db";  // Ruta al archivo de la base de datos SQLite
+// Puerto donde escuchará el servidor (en Plesk se define automáticamente, usamos el que da el sistema)
+const PORT = process.env.PORT || 3000;
+
+// Configuración de conexión a MySQL 
+const DB_CONFIG = {
+    host: "localhost:3306",                 
+    user: "alan",                      
+    password: "12345pleskGuevara",     
+    database: "aguemar_proyecto_biometria" 
+};
 
 // Crear la aplicación de Express
 const app = express();
 
-// Middleware para que Express pueda interpretar cuerpos de peticiones en formato JSON
-// Ej: POST con body {"usuario":"pepe"}
+// Middleware para procesar JSON en las peticiones
 app.use(express.json());
-// permitir a cualquier origen (para desarrollo está bien). LUEGO YA VEREMOS.
-app.use(cors());
+app.use(cors()); // Permitir peticiones desde cualquier origen (útil para la web en /httpdocs)
 
-// Instanciamos la lógica de negocio, pasándole la ruta de la BD.
-// Esto internamente abrirá/gestionará la conexión a la base de datos.
-const logica = new Logica(BD_PATH);
+// Instanciamos la lógica de negocio con la configuración de MySQL
+const logica = new Logica(DB_CONFIG);
 
-// Cargamos las rutas REST y las "montamos" sobre la aplicación Express.
-// Le pasamos la instancia de lógica para que las rutas puedan acceder a la BD.
+// Montamos las rutas REST con acceso a la lógica
 app.use("/", reglasREST(logica));
 
-// Finalmente, arrancamos el servidor y lo ponemos a escuchar en el puerto definido.
-// Al estar levantado, aceptará peticiones en http://localhost:3000
+// Arrancar el servidor
 app.listen(PORT, () => {
     console.log(`Servidor REST escuchando en http://localhost:${PORT}`);
 });

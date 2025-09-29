@@ -16,10 +16,6 @@
     <!-- Script JS de la app -->
     <script defer src="js/index.js"></script>
 
-    <script>
-        // Configuración global de la API para que el JS la use
-        window.API_BASE = "http://localhost:3000";
-    </script>
 </head>
 <body>
 <header class="topbar">
@@ -34,7 +30,9 @@
         <div class="panel-header">
             <h2>Últimas medidas</h2>
             <div class="controls">
-                <!-- Selector de número de filas a mostrar -->
+
+                <!-- CÓDIGO PARA CUANDO MUESTRE VARIAS MEDIDAS EN UNA TABLA (SI ES QUE LO HAGO ASÍ)
+                Selector de número de filas a mostrar -->
                 <label for="limit">Filas:</label>
                 <select id="limit">
                     <option value="10">10</option>

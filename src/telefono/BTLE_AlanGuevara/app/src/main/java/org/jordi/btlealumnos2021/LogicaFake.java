@@ -8,8 +8,9 @@ import java.net.URL;
 
 public class LogicaFake {
     private static final String TAG = ">>>>";
-    // Aquí irá la URL real de mi endpoint cuando exista (ahora puede ser temporal) CAMBIARÁ? SÍ
-    private static final String API_URL = "http://192.168.1.246:3000/medida";
+
+    private static final String API_URL = "https://aguemar.upv.edu.es/medida";
+
 
     public void guardarMedicion(String uuid, int gas, int valor, int contador) {
         new Thread(() -> { //  Android no te deja hacer llamadas de red (HTTP, sockets, etc.) en el hilo principal (UI thread) porque si la red se queda lenta, tu app se congelaría.
