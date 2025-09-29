@@ -189,11 +189,8 @@ public class MainActivity extends AppCompatActivity {
 
                     // -------------------------------------------------------------------------
                     // -------------------------------------------------------------------------
-
-
-                    // detener escaneo cuando se encuentra, me interesará esto en el futuro o no?
-                    detenerBusquedaDispositivosBTLE();
-                    Log.d(ETIQUETA_LOG, "Se ha detenido la búsqueda, encontrado con éxito el dispositivo: " + nombre);
+                    
+                    Log.d(ETIQUETA_LOG, "Encontrado con éxito el dispositivo: " + nombre);
                 }
             }
 
@@ -254,8 +251,12 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     public void botonDetenerBusquedaDispositivosBTLEPulsado( View v ) {
+        /*
+        LO COMENTO PORQUE NO TENGO PLACA Y NECESITO PROBAR QUE HAGA POST CORRECTAMENTE
         Log.d(ETIQUETA_LOG, " boton detener busqueda dispositivos BTLE Pulsado" );
         this.detenerBusquedaDispositivosBTLE();
+        */
+        logicaFake.guardarMedicion("EPSG-GTI-PROY-3A", 12, 1254, 8);
     } // ()
 
     // --------------------------------------------------------------
