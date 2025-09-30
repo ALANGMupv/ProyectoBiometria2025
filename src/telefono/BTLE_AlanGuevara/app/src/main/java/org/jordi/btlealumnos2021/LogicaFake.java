@@ -21,6 +21,9 @@ public class LogicaFake {
                 json.put("valor", valor);     // ppm
                 json.put("contador", contador);
 
+                // LOG extra para ver exactamente qué se envía
+                Log.d(TAG, "Enviando JSON: " + json.toString());
+
                 // Se prepara la conexión HTTP hacia la API
                 URL url = new URL(API_URL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();

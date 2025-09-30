@@ -25,10 +25,9 @@
 
     <Button
         android:id="@+id/botonBuscarNuestroDispositivoBTLE"
-        android:text="Buscar nuestro dispositivo  BTLE"
-        android:onClick="botonBuscarNuestroDispositivoBTLEPulsado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:onClick="botonBuscarNuestroDispositivoBTLEPulsado"
+        android:text="Buscar placa Alan y guardar en la BBDD" />
 
 </android.widget.LinearLayout>

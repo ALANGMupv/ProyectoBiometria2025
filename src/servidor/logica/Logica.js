@@ -46,7 +46,7 @@ class Logica {
             const sqlSelect = `SELECT * FROM medidas WHERE id = ?`;
             const [filas] = await conn.execute(sqlSelect, [resultado.insertId]);
 
-            return filas[0]; // Devolvemos el objeto con los datos insertados
+            return filas[0]; // Devolvemos el objeto con los datos insertados, array de objetos
         } finally {
             conn.release(); // Liberamos la conexión al pool
         }

@@ -10,12 +10,14 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
     // Se crea una instancia de la clase LogicaFake
     private LogicaFake logicaFake = new LogicaFake();
 
-    private long ultimaLectura = 0;
+    private int ultimoContador = -1; // Recuerda el último contador recibido
+
+    private boolean dispositivoEncontrado = false; // Para el TOAST de Encontrado el dispositivo....(Placa Alan)
 
 
     // --------------------------------------------------------------
@@ -147,30 +151,31 @@ public class MainActivity extends AppCompatActivity {
         // super.onScanResult(ScanSettings.SCAN_MODE_LOW_LATENCY, result); para ahorro de energía
 
         this.callbackDelEscaneo = new ScanCallback() {
+
             @Override
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
                 // Lógica cambiada para encontrar un dispositivo en concreto
                 // Compara el nombre y si lo encuentra, lo muestra y se detiene la búsqueda
 
                 BluetoothDevice bluetoothDevice = resultado.getDevice();
                 // Instanciamos el nombre dentro de la función
                 String nombre = bluetoothDevice.getName();
-                Log.d(ETIQUETA_LOG, "Buscando el dispositivo. ¡A ver si tenemos suerte!");
 
                 // Si es igual el nombre al dispositivo buscaddo
                 if (nombre != null && nombre.equals(dispositivoBuscado)) {
-                    long ahora = System.currentTimeMillis();
 
-                    // Código añadido, recibirá lecturas cada 2s que es cuando reinicia el loop
-                    // Evitar procesar anuncios seguidos (solo 1 cada 2s)
-                    if (ahora - ultimaLectura < 2000) {
-                        return; // ignoramos este anuncio
+
+                    // Mostrar el Toast y LOG solo la PRIMERA vez
+                    if (!dispositivoEncontrado) {
+                        dispositivoEncontrado = true;
+                        Log.d(ETIQUETA_LOG, "Encontrado el dispositivo: " + nombre);
+
+                        Toast.makeText(MainActivity.this,
+                                "Encontrado el dispositivo " + nombre,
+                                Toast.LENGTH_SHORT).show();
                     }
-                    ultimaLectura = ahora;
 
-                    Log.d(ETIQUETA_LOG, "Encontrado el dispositivo: " + nombre);
 
                     // Mostramos la información del dispositivo en concreto
                     mostrarInformacionDispositivoBTLE(resultado);
@@ -193,16 +198,45 @@ public class MainActivity extends AppCompatActivity {
                     int contador = major & 0xFF;     // parte baja = contador
                     int valor = minor;               // valor de CO2
 
-                    // Enviar los datos procesados al servidor
-                    logicaFake.guardarMedicion(uuid, gas, valor, contador);
+                    // Nuevo: solo enviamos si el contador ha cambiado
+                    if (contador != ultimoContador) {
+                        ultimoContador = contador;
 
-                    // -------------------------------------------------------------------------
-                    // -------------------------------------------------------------------------
+                        // Detectar huecos ( ESTO DETECTA CONTADORES PERDIDOS, HE TENIDO PROBLEMAS CON ESO)
+                        if (ultimoContador != -1 && contador > ultimoContador + 1) {
+                            // Hemos perdido alguno entre medio
+                            for (int perdido = ultimoContador + 1; perdido < contador; perdido++) {
+                                Log.w(ETIQUETA_LOG, "⚠ Se perdió el contador " + perdido);
+                                Toast.makeText(MainActivity.this,
+                                        "⚠ Perdido contador " + perdido,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
 
-                    Log.d(ETIQUETA_LOG, "Encontrado con éxito el dispositivo: " + nombre);
+                        Log.d(ETIQUETA_LOG, "Enviando a la API. ¡A ver si tenemos suerte!");
+                        // Enviar los datos procesados al servidor
+                        logicaFake.guardarMedicion(uuid, gas, valor, contador);
+
+                        // Mostrar Toast para verificar en el móvil
+                        Toast.makeText(MainActivity.this,
+                                "Guardado en BBDD -> contador=" + contador,
+                                Toast.LENGTH_SHORT).show();
+
+                        // -------------------------------------------------------------------------
+                        // -------------------------------------------------------------------------
+
+                        Log.d(ETIQUETA_LOG, "Si todo ha ido bien, guardado en la BBDD");
+
+                        // Cada múltiplo de 10 → confirmación de que no se ha perdido ningún anuncio en 10 veces
+                        if (contador % 10 == 0) {
+                            Toast.makeText(MainActivity.this,
+                                    "✅ Del " + (contador - 9) + " al " + contador + " sin pérdidas",
+                                    Toast.LENGTH_LONG).show();
+                            Log.i(ETIQUETA_LOG, "✅ Del " + (contador - 9) + " al " + contador + " sin pérdidas");
+                        }
                     }
                 }
-
+            }
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
@@ -225,7 +259,16 @@ public class MainActivity extends AppCompatActivity {
         //Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado
         //      + " -> " + Utilidades.stringToUUID( dispositivoBuscado ) );
 
-        this.elEscanner.startScan( this.callbackDelEscaneo );
+
+        // Se supone que añade un modo más agresivo de búsqueda, a ver si así no pierdo anuncios por el camino
+        ScanSettings settings = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                .build();
+
+        this.elEscanner.startScan(null, settings, this.callbackDelEscaneo);
+
+        // this.elEscanner.startScan( this.callbackDelEscaneo );
     } // ()
 
     // --------------------------------------------------------------
@@ -244,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     public void botonBuscarDispositivosBTLEPulsado( View v ) {
+        Toast.makeText(this, "Buscando todos los dispositivos BLE...", Toast.LENGTH_SHORT).show();
         Log.d(ETIQUETA_LOG, " boton buscar dispositivos BTLE Pulsado" );
         this.buscarTodosLosDispositivosBTLE();
     } // ()
@@ -251,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     // --------------------------------------------------------------
     public void botonBuscarNuestroDispositivoBTLEPulsado( View v ) {
+        Toast.makeText(this, "Buscando mi dispositivo BLE...", Toast.LENGTH_SHORT).show();
         Log.d(ETIQUETA_LOG, " boton nuestro dispositivo BTLE Pulsado" );
         //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
 
@@ -263,8 +308,13 @@ public class MainActivity extends AppCompatActivity {
     public void botonDetenerBusquedaDispositivosBTLEPulsado( View v ) {
         /*
         LO COMENTO PORQUE NO TENGO PLACA Y NECESITO PROBAR QUE HAGA POST CORRECTAMENTE*/
+        Toast.makeText(this, "Deteniendo búsqueda...", Toast.LENGTH_SHORT).show();
         Log.d(ETIQUETA_LOG, " boton detener busqueda dispositivos BTLE Pulsado" );
         this.detenerBusquedaDispositivosBTLE();
+
+        // Reiniciamos la bandera para que en la siguiente búsqueda
+        // vuelva a mostrar el Toast y LOG de "Encontrado el dispositivo"
+        dispositivoEncontrado = false;
 
         /* PARA VER SI FUNCIONABA (NO HACER CASO)
         logicaFake.guardarMedicion("EPSG-GTI-PROY-3A", 12, 1254, 8);*/

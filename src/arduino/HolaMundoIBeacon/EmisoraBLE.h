@@ -122,6 +122,11 @@ public:
 	//
 	(*this).detenerAnuncio();
 	
+  //Líneas a añadir (Tributos a Fédor, sin esto no limpia bufffers y solo envía el primer anuncio del primer loop y ya. DOLOR DE CABEZA.)
+		Bluefruit.Advertising.stop();
+    Bluefruit.Advertising.clearData();
+    Bluefruit.ScanResponse.clearData();
+
 	//
 	// creo el beacon 
 	//
