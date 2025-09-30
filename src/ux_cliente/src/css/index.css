@@ -69,13 +69,6 @@ body {
     border-radius: 6px;
     font: inherit;
 }
-.controls button {
-    background: var(--brand);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
-.controls button:hover { filter: brightness(.95); }
 
 /* Tabla de medidas */
 .table-wrap { overflow-x: auto; } /* scroll horizontal si se desborda */

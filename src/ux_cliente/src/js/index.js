@@ -8,18 +8,11 @@ window.API_BASE = "https://aguemar.upv.edu.es";
 const tbody = document.getElementById("tbody-medidas");
 const errorBox = document.getElementById("error");
 const limitSel = document.getElementById("limit");
-const btnRefresh = document.getElementById("refresh");
 
-/* CÓDIGO PARA CUANDO MUESTRE VARIAS MEDIDAS EN UNA TABLA (SI ES QUE LO HAGO ASÍ)
 // Construye la URL de la API con el límite seleccionado
 function construirURL() {
-    const limit = encodeURIComponent(limitSel.value || 50);
+    const limit = encodeURIComponent(limitSel.value || 1);
     return `${window.API_BASE}/medidas?limit=${limit}`;
-}*/
-
-function construirURL() {
-    // Ahora solo pedimos la última medida → limit=1
-    return `${window.API_BASE}/medidas?limit=1`;
 }
 
 // Carga las medidas desde la API y actualiza la tabla
@@ -34,41 +27,31 @@ async function cargarMedidas() {
         console.error(e);
         mostrarError("No se pudieron cargar las medidas. ¿Servidor Node activo?");
         // fallback si no hay datos
-        tbody.innerHTML = `<tr><td colspan="6" class="muted">Sin datos</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="muted">Sin datos</td></tr>`;
     }
 }
 
 // Genera las filas de la tabla a partir de los datos
 function pintarFilas(filas) {
     if (!filas.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="muted">No hay medidas</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="muted">No hay medidas</td></tr>`;
         return;
     }
-    /* CÓDIGO PARA CUANDO MUESTRE VARIAS MEDIDAS EN UNA TABLA (SI ES QUE LO HAGO ASÍ)
     // Se escapan caracteres peligrosos en el UUID (XSS safe)
-    tbody.innerHTML = filas.map(r => `
-    <tr>
-      <td>${r.id}</td>
-      <td>${escaparHTML(r.uuid)}</td>
-      <td>${gasATexto(r.gas)}</td>
-      <td>${r.valor}</td>
-      <td>${r.contador}</td>
-      <td>${r.fecha}</td>
-    </tr>
-  `).join("");
-     */
-
-    const r = filas[0]; // solo la primera
-    tbody.innerHTML = `
-    <tr>
-      <td>${r.id}</td>
-      <td>${escaparHTML(r.uuid)}</td>
-      <td>${gasATexto(r.gas)}</td>
-      <td>${r.valor}</td>
-      <td>${r.contador}</td>
-      <td>${r.fecha}</td>
-    </tr>
-  `;
+    tbody.innerHTML = filas.map(r => {
+        const [fecha, hora] = formatearFecha(r.fecha);
+        return `
+        <tr>
+          <td>${r.id}</td>
+          <td>${escaparHTML(r.uuid)}</td>
+          <td>${gasATexto(r.gas)}</td>
+          <td>${r.valor}</td>
+          <td>${r.contador}</td>
+          <td>${fecha}</td>
+          <td>${hora}</td>
+        </tr>
+      `;
+    }).join("");
 }
 
 // Muestra un mensaje de error
@@ -79,9 +62,29 @@ function mostrarError(msg) {
 
 // Convierte códigos de gas a texto descriptivo
 function gasATexto(gas) {
-    if (gas === 11) return "CO₂ (11)";
-    if (gas === 12) return "Temperatura (12)";
+    console.log("Valor recibido en gasATexto:", gas, typeof gas); // log de depuración
+    const num = parseInt(gas, 10);
+    if (num === 11) return "CO₂";
+    if (num === 12) return "Temperatura";
     return gas;
+}
+
+// Formatea fecha ISO → [fecha, hora]
+function formatearFecha(iso) {
+    try {
+        let d = new Date(iso);
+        if (isNaN(d)) {
+            // si no reconoce el formato (ej: "2025-09-30 20:41:03"),
+            // lo dividimos manualmente
+            const [fecha, hora] = iso.split(" ");
+            return [fecha || iso, hora || ""];
+        }
+        const fecha = d.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+        const hora = d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        return [fecha, hora];
+    } catch {
+        return [iso, ""];
+    }
 }
 
 // Evita inyección de HTML en campos dinámicos
@@ -92,7 +95,6 @@ function escaparHTML(s) {
 }
 
 // Eventos de usuario
-btnRefresh.addEventListener("click", cargarMedidas);
 limitSel.addEventListener("change", cargarMedidas);
 
 // Auto-refresh cada 5s

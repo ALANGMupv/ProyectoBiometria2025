@@ -63,6 +63,7 @@ class Logica {
         try {
             // Seguridad: limit entre 1 y 500
             const lim = Math.max(1, Math.min(parseInt(limit || 50, 10), 500));
+             console.log("SQL LIMIT calculado =", lim);
 
             const sql = `
                 SELECT id, uuid, gas, valor, contador, fecha

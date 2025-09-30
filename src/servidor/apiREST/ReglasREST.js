@@ -76,6 +76,7 @@ function reglasREST(logica) {
     router.get("/medidas", async (req, res) => {
         try {
             const { limit } = req.query; // recogemos el query param ?limit=...
+            console.log("GET /medidas con limit =", limit); //
             const filas = await logica.listarMedidas(limit);
 
             res.json({

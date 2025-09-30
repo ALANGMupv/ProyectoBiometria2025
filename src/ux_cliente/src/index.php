@@ -20,7 +20,7 @@
 <body>
 <header class="topbar">
     <div class="container">
-        <h1>Proyecto Biometría</h1>
+        <h1>Proyecto Biometría - Alan Guevara Martínez</h1>
         <p class="subtitle">Sprint 0 – Medidas en tiempo real</p>
     </div>
 </header>
@@ -35,12 +35,12 @@
                 Selector de número de filas a mostrar -->
                 <label for="limit">Filas:</label>
                 <select id="limit">
+                    <option value="1" selected>Última medida</option>
                     <option value="10">10</option>
-                    <option value="50" selected>50</option>
+                    <option value="50">50</option>
                     <option value="100">100</option>
+                    <option value="300">300</option>
                 </select>
-                <!-- Botón para recargar los datos -->
-                <button id="refresh">Actualizar</button>
             </div>
         </div>
 
@@ -55,11 +55,12 @@
                     <th>Valor</th>
                     <th>Contador</th>
                     <th>Fecha</th>
+                    <th>Hora</th>
                 </tr>
                 </thead>
                 <tbody id="tbody-medidas">
                 <!-- Mensaje inicial mientras carga -->
-                <tr><td colspan="6" class="muted">Cargando…</td></tr>
+                <tr><td colspan="7" class="muted">Cargando…</td></tr>
                 </tbody>
             </table>
         </div>
