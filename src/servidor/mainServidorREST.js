@@ -18,7 +18,7 @@ const reglasREST = require("./apiREST/ReglasREST"); // Endpoints REST
 // Puerto donde escuchará el servidor (en Plesk se define automáticamente, usamos el que da el sistema)
 const PORT = process.env.PORT || 3000;
 
-// Configuración de conexión a MySQL 
+// Configuración de conexión a MySQL (Plesk)
 const DB_CONFIG = {
     host: "localhost:3306",                 
     user: "alan",                      

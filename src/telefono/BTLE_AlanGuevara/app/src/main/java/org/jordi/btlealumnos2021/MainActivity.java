@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ScanCallback callbackDelEscaneo = null; // Se define cuando inicias un escaneo.
 
-    // Se crea una instancia de la clase LogicaFake
+    // Se crea una instancia de la  clase LogicaFake
     private LogicaFake logicaFake = new LogicaFake();
 
     private int ultimoContador = -1; // Recuerda el último contador recibido

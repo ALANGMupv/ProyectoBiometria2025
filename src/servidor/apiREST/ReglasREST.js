@@ -92,7 +92,6 @@ function reglasREST(logica) {
         }
     });
 
-
     // Devolvemos el router con todas las rutas definidas (en este caso solo /medida)
     return router;
 }

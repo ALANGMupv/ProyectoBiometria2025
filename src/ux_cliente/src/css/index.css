@@ -1,5 +1,6 @@
+/* region --- Variables y reset --- */
 :root {
-    /* Variables de colores del tema */
+
     --brand: #5EB276;
     --bg: #f6f8f7;
     --text: #1f2d2a;
@@ -10,6 +11,7 @@
 
 /* Reset básico */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* endregion */
 
 body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, sans-serif;
@@ -89,21 +91,22 @@ body {
 .table tr:hover td { background: #fafdfb; }
 .table .muted { color: var(--muted); text-align: center; }
 
-/* Mensaje de error */
+/* Mensaje de error, esperemos que no salga. */
 .error {
     color: #b00020;
     margin: 10px 16px;
 }
 
-/* Pie de página */
+/* region --- Footer--- */
 .footer {
     padding: 20px 0;
     color: var(--muted);
     font-size: 14px;
     text-align: center;
 }
+/* endregion */
 
-/* Responsive: en pantallas pequeñas, se apilan los controles */
+/* region --- Responsive--- */
 @media (max-width: 640px) {
     .panel-header {
         flex-direction: column;
@@ -116,3 +119,4 @@ body {
     }
     .table th, .table td { font-size: 14px; }
 }
+/* endregion */

@@ -46,7 +46,7 @@ class Logica {
             const sqlSelect = `SELECT * FROM medidas WHERE id = ?`;
             const [filas] = await conn.execute(sqlSelect, [resultado.insertId]);
 
-            return filas[0]; // Devolvemos el objeto con los datos insertados, array de objetos
+            return filas[0]; // Devolvemos el objeto con los datos insertados, array de objetos. Es un feedback inmediato para el cliente de la API.
         } finally {
             conn.release(); // Liberamos la conexión al pool
         }
@@ -58,10 +58,10 @@ class Logica {
      * @param {number} limit - número máximo de filas a devolver (por defecto 50).
      * @return {Promise<Array>} - Devuelve un array de filas con las medidas.
      */
-    async listarMedidas(limit = 50) {
+    async listarMedidas(limit = 50) { // Si alguien llama a /api/medidas sin parámetro, el backend responde con 50
         const conn = await this.pool.getConnection();
         try {
-            // Seguridad: limit entre 1 y 500
+            // Seguridad: limit entre 1 y 500 (no le vamos a cumplir el deseo al iluminado que pida 1000 en el front)
             const lim = Math.max(1, Math.min(parseInt(limit || 50, 10), 500));
              console.log("SQL LIMIT calculado =", lim);
 

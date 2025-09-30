@@ -31,7 +31,7 @@
             <h2>Últimas medidas</h2>
             <div class="controls">
 
-                <!-- CÓDIGO PARA CUANDO MUESTRE VARIAS MEDIDAS EN UNA TABLA (SI ES QUE LO HAGO ASÍ)
+                <!-- CÓDIGO PARA CUANDO MUESTRE VARIAS MEDIDAS EN UNA TABLA
                 Selector de número de filas a mostrar -->
                 <label for="limit">Filas:</label>
                 <select id="limit">
