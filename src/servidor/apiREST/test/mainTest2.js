@@ -5,7 +5,11 @@
 var request = require("request")
 var assert  = require("assert")
 
-const IP_PUERTO = "http://localhost:3000"
+// Dirección de servidor REST en Plesk y también en local, veremos si funciona
+const IP_PUERTO = process.env.TEST_URL || "https://aguemar.upv.edu.es";
+
+/* Dirección de servidor REST en local 
+const IP_PUERTO = "http://localhost:3000"*/
 
 describe("Test 2 : Validación de JSON", function() {
 

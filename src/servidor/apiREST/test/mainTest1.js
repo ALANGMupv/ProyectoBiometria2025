@@ -5,8 +5,11 @@
 var request = require("request")
 var assert  = require("assert")
 
-// Dirección de servidor REST
-const IP_PUERTO = "http://localhost:3000"
+// Dirección de servidor REST en Plesk y también en local, veremos si funciona
+const IP_PUERTO = process.env.TEST_URL || "https://aguemar.upv.edu.es"; // NO ES HTTP, ES HTTPS, DISTINTOS PROTOCOLOS
+
+/* Dirección de servidor REST en local
+const IP_PUERTO = "http://localhost:3000"*/
 
 // .....................................................................
 // grupo de tests

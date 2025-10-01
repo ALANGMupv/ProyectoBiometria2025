@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configuración de conexión a MySQL (Plesk)
 const DB_CONFIG = {
-    host: "localhost:3306",                 
+    host: "localhost",                 
     user: "alan",                      
     password: "12345pleskGuevara",     
     database: "aguemar_proyecto_biometria" 
@@ -38,6 +38,11 @@ const logica = new Logica(DB_CONFIG);
 
 // Montamos las rutas REST con acceso a la lógica
 app.use("/", reglasREST(logica));
+
+// Ruta raíz para comprobar que el servidor está vivo
+app.get("/", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Servidor vivo 🚀" });
+});
 
 // Arrancar el servidor
 app.listen(PORT, () => {
