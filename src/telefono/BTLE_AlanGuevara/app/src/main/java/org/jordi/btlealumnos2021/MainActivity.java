@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 if (nombre != null && nombre.equals(dispositivoBuscado)) {
 
 
-                    // Mostrar el Toast y LOG solo la PRIMERA vez
+                    // Mostrar el Toast, LOG y la información solo la PRIMERA vez
                     if (!dispositivoEncontrado) {
                         dispositivoEncontrado = true;
                         Log.d(ETIQUETA_LOG, "Encontrado el dispositivo: " + nombre);
@@ -174,11 +174,10 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this,
                                 "Encontrado el dispositivo " + nombre,
                                 Toast.LENGTH_SHORT).show();
+
+                        // Mostramos la información del dispositivo en concreto
+                        mostrarInformacionDispositivoBTLE(resultado);
                     }
-
-
-                    // Mostramos la información del dispositivo en concreto
-                    mostrarInformacionDispositivoBTLE(resultado);
 
                     // -------------------------------------------------------------------------
                     // -------------------------------------------------------------------------

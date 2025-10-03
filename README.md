@@ -36,9 +36,39 @@ Repositorio del proyecto de **Biometría y Medio Ambiente**. Incluye código, di
 
 ---
 
-## ✅ Estado Actual  
+## 🚀 Despliegue del Proyecto
 
-- ✔️ **API REST funcional** desplegada en Plesk  
-- ✔️ **Base de datos MySQL** operativa con medidas biométricas  
-- ✔️ **Pruebas unitarias e integración** para API y lógica de negocio  
-- ✔️ **Frontend PHP** conectado a la API y mostrando datos en tiempo real  
+El proyecto está desplegado en **Plesk (UPV)**:
+
+1. **Backend (Node.js + Express)**  
+   - Se ejecuta en el panel de Plesk, con puerto asignado internamente.  
+   - El acceso externo está publicado mediante proxy inverso en:  
+     👉 `https://aguemar.upv.edu.es/medida`
+
+2. **Base de Datos (MySQL en Plesk)**  
+   - Configurada y gestionada desde el propio panel.  
+   - La API REST se conecta con credenciales locales (`localhost`).  
+
+3. **Frontend (PHP en /httpdocs)**  
+   - Desplegado en la carpeta pública de Plesk.  
+   - Accesible en:  
+     👉 [https://aguemar.upv.edu.es/biometriaAlan/index.php](https://aguemar.upv.edu.es/biometriaAlan/index.php)
+
+---
+
+## 🧪 Ejecución de Tests
+
+Los tests están desarrollados con **Mocha + Request** y verifican:
+
+- Inserción de medidas (`POST /medida`)  
+- Validación de JSON y errores  
+- Persistencia en base de datos  
+- Listado de medidas (`GET /medidas`)  
+- Lógica de negocio (consultas MySQL)  
+
+Para ejecutarlos:
+
+```bash
+npm install   # instalar dependencias
+npm test      # ejecutar suite de pruebas
+
