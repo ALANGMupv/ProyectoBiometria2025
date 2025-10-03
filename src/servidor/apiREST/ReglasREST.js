@@ -9,6 +9,8 @@
  *   - Llama a la capa de lógica (Logica.js), que es la que realmente accede a la BD.
  */
 
+// @author: Alan Guevara Martínez
+
 const express = require("express");
 
 /**
@@ -16,6 +18,8 @@ const express = require("express");
  * Recibe como parámetro `logica`, que es la instancia de la capa de negocio
  * (conexión a la base de datos y funciones para operar con ella).
  */
+
+// logica: Logica → reglasREST() → router : Router
 function reglasREST(logica) {
     // Creamos un "router", un mini-servidor de Express donde definiremos las rutas
     const router = express.Router();

@@ -1,5 +1,6 @@
 // -*- mode: c++ -*-
-
+// ServicioEnEmisora.h: representa un servicio BLE con sus características, pensado para cuando la placa actúe como un periférico al que un cliente (móvil, PC) se pueda conectar y leer/escribir datos.
+// La clase interna Caracteristica.h permite definir cada dato individual del servicio (ej. CO₂, temperatura, etc.), con sus propiedades (lectura, escritura, notificación), permisos de acceso y tamaño de datos.
 // ----------------------------------------------------------
 // Jordi Bataller i Mascarell
 // 2019-07-17

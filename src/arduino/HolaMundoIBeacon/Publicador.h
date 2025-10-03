@@ -1,5 +1,5 @@
 // -*- mode: c++ -*-
-
+// Publicador.h: Encargada de enviar (publicar) datos de medidas en forma de anuncios BLE iBeacon usando una instancia de EmisoraBLE.
 // --------------------------------------------------------------
 // Jordi Bataller i Mascarell
 // --------------------------------------------------------------

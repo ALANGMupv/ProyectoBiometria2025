@@ -8,6 +8,8 @@
  * - Devolver resultados a la capa REST (ReglasREST.js).
  */
 
+// @author: Alan Guevara Martínez
+
 // Importamos la librería mysql2 con soporte de promesas
 const mysql = require("mysql2/promise");
 
@@ -31,6 +33,8 @@ class Logica {
      * 
      * @return {Promise<Object>} - Devuelve la fila insertada.
      */
+
+    // (uuid: Texto, gas: Z, valor: Z, contador: Z) → guardarMedida() → { id: Z, uuid: Texto, gas: Z, valor: Z, contador: Z, fecha: Texto }
     async guardarMedida(uuid, gas, valor, contador) {
         // Conexión desde el pool
         const conn = await this.pool.getConnection();
@@ -58,6 +62,8 @@ class Logica {
      * @param {number} limit - número máximo de filas a devolver (por defecto 50).
      * @return {Promise<Array>} - Devuelve un array de filas con las medidas.
      */
+
+    // (limit: Z) → listarMedidas() → [ { id: Z, uuid: Texto, gas: Z, valor: Z, contador: Z, fecha: Texto } ]
     async listarMedidas(limit = 50) { // Si alguien llama a /api/medidas sin parámetro, el backend responde con 50
         const conn = await this.pool.getConnection();
         try {

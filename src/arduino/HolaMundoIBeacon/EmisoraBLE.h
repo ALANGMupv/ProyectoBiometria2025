@@ -3,6 +3,7 @@
 // ----------------------------------------------------------
 // Jordi Bataller i Mascarell
 // 2019-07-07
+// EmisoraBLE.h: encapsula toda la lógica de configuración, arranque, anuncio y gestión de servicios/callbacks de una emisora Bluetooth Low Energy (BLE).
 // ----------------------------------------------------------
 // Sirve para que el fichero de cabecera Emisora.h no se incluya más de una vez al compilar
 #ifndef EMISORA_H_INCLUIDO

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 
 // ------------------------------------------------------------------
+// MainActivity.java: clase principal de la app Android que gestiona el escaneo BLE,
+// muestra información de dispositivos o busca uno concreto, parsea tramas iBeacon con datos de CO₂ y los envía al servidor, además de manejar permisos y botones de la interfaz.
 // ------------------------------------------------------------------
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // → buscarTodosLosDispositivosBTLE() →
     private void buscarTodosLosDispositivosBTLE() {
         Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empieza ");
 
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // resultado: ScanResult → mostrarInformacionDispositivoBTLE()
     private void mostrarInformacionDispositivoBTLE( ScanResult resultado ) {
 
         BluetoothDevice bluetoothDevice = resultado.getDevice();
@@ -141,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // dispositivoBuscado: Texto → buscarEsteDispositivoBTLE() →
     private void buscarEsteDispositivoBTLE(final String dispositivoBuscado ) {
         Log.d(ETIQUETA_LOG, " buscarEsteDispositivoBTLE(): empieza ");
 
@@ -153,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         this.callbackDelEscaneo = new ScanCallback() {
 
             @Override
-            public void onScanResult( int callbackType, ScanResult resultado ) {
+            public void onScanResult(int callbackType, ScanResult resultado) {
                 super.onScanResult(callbackType, resultado);
                 // Lógica cambiada para encontrar un dispositivo en concreto
                 // Compara el nombre y si lo encuentra, lo muestra y se detiene la búsqueda
@@ -199,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
                     // Nuevo: solo enviamos si el contador ha cambiado
                     if (contador != ultimoContador) {
-                        ultimoContador = contador;
 
                         // Detectar huecos ( ESTO DETECTA CONTADORES PERDIDOS, HE TENIDO PROBLEMAS CON ESO)
                         if (ultimoContador != -1 && contador > ultimoContador + 1) {
@@ -212,27 +213,22 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
+                        ultimoContador = contador;
+
                         Log.d(ETIQUETA_LOG, "Enviando a la API. ¡A ver si tenemos suerte!");
+
                         // Enviar los datos procesados al servidor
                         logicaFake.guardarMedicion(uuid, gas, valor, contador);
 
                         // Mostrar Toast para verificar en el móvil
                         Toast.makeText(MainActivity.this,
-                                "Guardado en BBDD -> contador=" + contador,
+                                "contador=" + contador,
                                 Toast.LENGTH_SHORT).show();
 
                         // -------------------------------------------------------------------------
                         // -------------------------------------------------------------------------
 
                         Log.d(ETIQUETA_LOG, "Si todo ha ido bien, guardado en la BBDD");
-
-                        // Cada múltiplo de 10 → confirmación de que no se ha perdido ningún anuncio en 10 veces
-                        if (contador % 10 == 0) {
-                            Toast.makeText(MainActivity.this,
-                                    "✅ Del " + (contador - 9) + " al " + contador + " sin pérdidas",
-                                    Toast.LENGTH_LONG).show();
-                            Log.i(ETIQUETA_LOG, "✅ Del " + (contador - 9) + " al " + contador + " sin pérdidas");
-                        }
                     }
                 }
             }
@@ -265,13 +261,11 @@ public class MainActivity extends AppCompatActivity {
                 .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
                 .build();
 
-        this.elEscanner.startScan(null, settings, this.callbackDelEscaneo);
-
-        // this.elEscanner.startScan( this.callbackDelEscaneo );
+        this.elEscanner.startScan( this.callbackDelEscaneo );
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // → detenerBusquedaDispositivosBTLE() →
     private void detenerBusquedaDispositivosBTLE() {
 
         if ( this.callbackDelEscaneo == null ) {
@@ -284,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // (v: View) → botonBuscarDispositivosBTLEPulsado()
     public void botonBuscarDispositivosBTLEPulsado( View v ) {
         Toast.makeText(this, "Buscando todos los dispositivos BLE...", Toast.LENGTH_SHORT).show();
         Log.d(ETIQUETA_LOG, " boton buscar dispositivos BTLE Pulsado" );
@@ -292,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // (v: View) → botonBuscarNuestroDispositivoBTLEPulsado()
     public void botonBuscarNuestroDispositivoBTLEPulsado( View v ) {
         Toast.makeText(this, "Buscando mi dispositivo BLE...", Toast.LENGTH_SHORT).show();
         Log.d(ETIQUETA_LOG, " boton nuestro dispositivo BTLE Pulsado" );
@@ -303,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // (v: View) → botonDetenerBusquedaDispositivosBTLEPulsado()
     public void botonDetenerBusquedaDispositivosBTLEPulsado( View v ) {
         /*
         LO COMENTO PORQUE NO TENGO PLACA Y NECESITO PROBAR QUE HAGA POST CORRECTAMENTE*/
@@ -320,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // inicializarBlueTooth() →
     private void inicializarBlueTooth() {
         Log.d(ETIQUETA_LOG, " inicializarBlueTooth(): obtenemos adaptador BT ");
 
@@ -378,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // (savedInstanceState: Bundle) → onCreate()
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -393,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
     } // onCreate()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // (requestCode: Z, permissions: Texto[], grantResults: Z[])
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
         super.onRequestPermissionsResult( requestCode, permissions, grantResults);

@@ -8,6 +8,8 @@
  * - Arranca el servidor escuchando en el puerto configurado.
  */
 
+// @author: Alan Guevara Martínez
+
 // Importamos las librerías y módulos necesarios
 const express = require("express");           // Framework para levantar el servidor HTTP y definir rutas
 const cors = require("cors");                 // Middleware para permitir peticiones desde otros orígenes

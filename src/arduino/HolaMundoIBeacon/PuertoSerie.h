@@ -1,6 +1,6 @@
     
 // -*- mode: c++ -*-
-
+// PuertoSerie.h: abstracción ligera del puerto serie de Arduino (Serial) para simplificar la inicialización y la escritura de mensajes.
 // ----------------------------------------------------------
 // Jordi Bataller i Mascarell
 // 2019-07-07

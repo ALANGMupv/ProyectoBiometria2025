@@ -4,7 +4,8 @@
 //
 // Jordi Bataller i Mascarell
 // 2019-07-07
-//
+// HolaMundoIBeacon: Este fichero define el programa principal de la placa nRF52: inicializa el LED, el puerto serie, la emisora BLE y el medidor. En el setup prepara la placa 
+// y en el loop hace parpadear el LED, mide CO₂ y publica el valor periódicamente mediante anuncios iBeacon.
 // --------------------------------------------------------------
 
 // https://learn.sparkfun.com/tutorials/nrf52840-development-with-arduino-and-circuitpython

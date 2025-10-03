@@ -1,3 +1,4 @@
+
 package org.jordi.btlealumnos2021;
 
 import android.util.Log;
@@ -6,12 +7,17 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+// -----------------------------------------------------------------------------------
+// @author: Alan Guevara Martínez
+// LogicaFake.java: Este fichero define una clase auxiliar en Android para enviar mediciones al servidor mediante una petición HTTP POST en formato JSON
+// -----------------------------------------------------------------------------------
+
 public class LogicaFake {
     private static final String TAG = ">>>>";
 
     private static final String API_URL = "https://aguemar.upv.edu.es/medida";
 
-
+// uuid: Texto, gas: Z, valor: Z, contador: Z → guardarMedicion() →
     public void guardarMedicion(String uuid, int gas, int valor, int contador) {
         new Thread(() -> { //  Android no te deja hacer llamadas de red (HTTP, sockets, etc.) en el hilo principal (UI thread) porque si la red se queda lenta, tu app se congelaría.
             try {
